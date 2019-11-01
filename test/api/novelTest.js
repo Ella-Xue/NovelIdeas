@@ -103,4 +103,35 @@ describe("Novel", () => {
                 });
         });
     });
+    describe("GET /novels/:id", () => {
+        describe("when the id is valid", () => {
+            it("should return the matching novel", done => {
+                request(server)
+                    .get(`/novels/${validID}`)
+                    .set("Accept", "application/json")
+                    .expect("Content-Type", /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        expect(res.body[0]).to.have.property("name", "Rusty Hotel");
+                        expect(res.body[0]).to.have.property("author", "Rusty");
+                        expect(res.body[0]).to.have.property("type", "Horror");
+                        expect(res.body[0]).to.have.property("recommender", "Merry");
+                        done(err);
+                    });
+            });
+        });
+        describe("when the id is invalid", () => {
+            it("should return the NOT found message", done => {
+                request(server)
+                    .get("/novels/1000000020202")
+                    .set("Accept", "application/json")
+                    .expect("Content-Type", /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        expect(res.body.message).equals("Novel NOT Found!");
+                        done(err);
+                    });
+            });
+        });
+    });
 });
