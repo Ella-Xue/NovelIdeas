@@ -1,0 +1,33 @@
+{
+  "name": "novel-ideals",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "mocha test/api/novelTest.js --timeout 10000"
+  },
+  "dependencies": {
+    "chai-http": "^4.3.0",
+    "chai-things": "^0.2.0",
+    "cookie-parser": "~1.4.3",
+    "cookies": "^0.8.0",
+    "debug": "~2.6.9",
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "lodash": "^4.17.15",
+    "mocha": "^6.2.2",
+    "mongo": "^0.1.0",
+    "mongodb": "^3.3.3",
+    "mongodb-core": "^3.2.7",
+    "mongodb-uri": "^0.9.7",
+    "mongoose": "^5.7.5",
+    "mongoose-legacy-pluralize": "^1.0.2",
+    "morgan": "~1.9.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mongodb-memory-server": "^6.0.1",
+    "supertest": "^4.0.2"
+  }
+}
