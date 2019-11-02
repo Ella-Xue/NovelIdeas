@@ -135,6 +135,37 @@ describe("Novel", () => {
         });
     });
     describe("POST /donations", () => {
+        it("should return can not be empty message", () => {
+            const novel = {
+                name:"",
+                author:"Lily",
+                type:"Romantic",
+                recommender:"HP"
+            };
+
+            return request(server)
+                .post("/novels")
+                .send(novel)
+                .then(res => {
+                    expect(res.body.message).equals("The novel name can not be empty");
+                });
+        });
+        it("should return novel already existed message", () => {
+            const novel = {
+                name:"Rusty Hotel",
+                author:"Rusty",
+                type:"Horro",
+                recommender:"HP"
+            };
+
+            return request(server)
+                .post("/novels")
+                .send(novel)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.message).equals("The novel is already exist");
+                });
+        });
         it("should return confirmation message and update mongodb", () => {
             const novel = {
                 name:"My Girl",
