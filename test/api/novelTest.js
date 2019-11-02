@@ -49,14 +49,16 @@ describe("Novel", () => {
             novel.author = "Rusty";
             novel.type = "Horror";
             novel.recommender = "Merry";
+            novel.grade = 5;
             await novel.save();
             novel = new Novel();
             novel.name = "Cube Escape";
             novel.author = "Rusty";
             novel.type = "Horror";
             novel.recommender = "Merry";
+            novel.grade = 3;
             await novel.save();
-            novel = await Novel.findOne({ name:"Rusty Hotel" });
+            novel = await Novel.findOne({name: "Rusty Hotel"});
             validID = novel._id;
         } catch (error) {
             console.log(error);
@@ -83,17 +85,17 @@ describe("Novel", () => {
                             };
                         });
                         expect(result).to.deep.include({
-                            name:"Rusty Hotel",
-                            author:"Rusty",
-                            type:"Horror",
-                            recommender:"Merry"
+                            name: "Rusty Hotel",
+                            author: "Rusty",
+                            type: "Horror",
+                            recommender: "Merry"
 
                         });
                         expect(result).to.deep.include({
-                            name:"Cube Escape",
-                            author:"Rusty",
-                            type:"Horror",
-                            recommender:"Merry"
+                            name: "Cube Escape",
+                            author: "Rusty",
+                            type: "Horror",
+                            recommender: "Merry"
 
                         });
                         done();
@@ -134,13 +136,13 @@ describe("Novel", () => {
             });
         });
     });
-    describe("POST /donations", () => {
+    describe("POST /novels", () => {
         it("should return can not be empty message", () => {
             const novel = {
-                name:"",
-                author:"Lily",
-                type:"Romantic",
-                recommender:"HP"
+                name: "",
+                author: "Lily",
+                type: "Romantic",
+                recommender: "HP"
             };
 
             return request(server)
@@ -152,10 +154,10 @@ describe("Novel", () => {
         });
         it("should return novel already existed message", () => {
             const novel = {
-                name:"Rusty Hotel",
-                author:"Rusty",
-                type:"Horro",
-                recommender:"HP"
+                name: "Rusty Hotel",
+                author: "Rusty",
+                type: "Horro",
+                recommender: "HP"
             };
 
             return request(server)
@@ -168,10 +170,10 @@ describe("Novel", () => {
         });
         it("should return confirmation message and update mongodb", () => {
             const novel = {
-                name:"My Girl",
-                author:"Lily",
-                type:"Romantic",
-                recommender:"HP"
+                name: "My Girl",
+                author: "Lily",
+                type: "Romantic",
+                recommender: "HP"
             };
 
             return request(server)
@@ -193,6 +195,44 @@ describe("Novel", () => {
                     expect(res.body[0]).to.have.property("type", "Romantic");
                     expect(res.body[0]).to.have.property("recommender", "HP");
                 });
+        });
+    });
+    describe("PUT /novels/:id", () => {
+        describe("when the id is valid", () => {
+
+            it("should return a message and update the grade", () => {
+                return request(server)
+                    .put(`/novels/${validID}`)
+                    .send({"grade":4})
+                    .expect(200)
+                    .then(resp => {
+                        expect(resp.body).to.include({
+                            message: "Novel Successfully graded!"
+                        });
+                        expect(resp.body.data).to.have.property("grade", 4);
+                    });
+            });
+            after(() => {
+                return request(server)
+                    .get(`/novels/${validID}`)
+                    .expect(200)
+                    .then(resp => {
+                        expect(resp.body[0]).to.have.property("grade", 4);
+                    });
+            });
+        });
+        describe("when the id is invalid", () => {
+            it("should return the Novel NOT Found! message", done => {
+                request(server)
+                    .get("/novels/1000000020202")
+                    .set("Accept", "application/json")
+                    .expect("Content-Type", /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        expect(res.body.message).equals("Novel NOT Found!");
+                        done(err);
+                    });
+            });
         });
     });
 });
