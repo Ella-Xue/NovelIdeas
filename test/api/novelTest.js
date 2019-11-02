@@ -134,7 +134,7 @@ describe("Novel", () => {
             });
         });
     });
-    describe("POST /donations", () => {
+    describe("POST /novels", () => {
         it("should return can not be empty message", () => {
             const novel = {
                 name:"",
@@ -193,6 +193,32 @@ describe("Novel", () => {
                     expect(res.body[0]).to.have.property("type", "Romantic");
                     expect(res.body[0]).to.have.property("recommender", "HP");
                 });
+        });
+    });
+    describe("DELETE /novels/:id", () => {
+        describe.only("when the id is valid", () => {
+            it("should return confirmation message and update database", () => {
+                request(server)
+                    .delete(`novels/${validID}`)
+                    .set("Accept", "application/json")
+                    .expect("Content-Type", /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        expect(res.body.message).equals("Novels Successfully Deleted!");
+                        done(err);
+                    });
+            });
+        });
+        describe("when the id is invalid", () => {
+            it("should return the NOT found message", done => {
+                request(server)
+                    .delete("/novels/1000000020202")
+                    .expect(200)
+                    .end((err, res) => {
+                        expect(res.body.message).equals("Novels NOT Found!");
+                        done(err);
+                    });
+            });
         });
     });
 });
