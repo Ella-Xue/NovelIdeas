@@ -134,4 +134,65 @@ describe("Novel", () => {
             });
         });
     });
+    describe("POST /donations", () => {
+        it("should return can not be empty message", () => {
+            const novel = {
+                name:"",
+                author:"Lily",
+                type:"Romantic",
+                recommender:"HP"
+            };
+
+            return request(server)
+                .post("/novels")
+                .send(novel)
+                .then(res => {
+                    expect(res.body.message).equals("The novel name can not be empty");
+                });
+        });
+        it("should return novel already existed message", () => {
+            const novel = {
+                name:"Rusty Hotel",
+                author:"Rusty",
+                type:"Horro",
+                recommender:"HP"
+            };
+
+            return request(server)
+                .post("/novels")
+                .send(novel)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.message).equals("The novel is already exist");
+                });
+        });
+        it("should return confirmation message and update mongodb", () => {
+            const novel = {
+                name:"My Girl",
+                author:"Lily",
+                type:"Romantic",
+                recommender:"HP"
+            };
+
+            return request(server)
+                .post("/novels")
+                .send(novel)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.message).equals("Novel Successfully added");
+                    validID = res.body.data._id;
+                });
+        });
+        after(() => {
+            return request(server)
+                .get(`/novels/${validID}`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body[0]).to.have.property("name", "My Girl");
+                    expect(res.body[0]).to.have.property("author", "Lily");
+                    expect(res.body[0]).to.have.property("type", "Romantic");
+                    expect(res.body[0]).to.have.property("recommender", "HP");
+                });
+        });
+    });
 });
