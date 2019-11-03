@@ -528,14 +528,44 @@ describe("Novel-Ideas", () => {
                                 keyword2 : "Science Fiction",
                                 numofbooks : 2,
                                 numofcollected : 5
-
-
                             });
                             done();
                         } catch (e) {
                             done(e);
                         }
                     });
+            });
+        });
+        describe("GET /author/:id", () => {
+            describe("when the id is valid", () => {
+                it("should return the matching author", done => {
+                    request(server)
+                        .get(`/author/${validID2}`)
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .end((err, res) => {
+                            expect(res.body[0]).to.have.property("name", "Rusty");
+                            expect(res.body[0]).to.have.property("keyword1", "Horror");
+                            expect(res.body[0]).to.have.property("keyword2", "Science Fiction");
+                            expect(res.body[0]).to.have.property("numofbooks", 4);
+                            expect(res.body[0]).to.have.property("numofcollected", 9);
+                            done(err);
+                        });
+                });
+            });
+            describe("when the id is invalid", () => {
+                it("should return the NOT found message", done => {
+                    request(server)
+                        .get("/author/100021000000020202")
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .end((err, res) => {
+                            expect(res.body.message).equals("Author NOT Found!");
+                            done(err);
+                        });
+                });
             });
         });
     })
