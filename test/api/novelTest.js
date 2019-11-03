@@ -568,5 +568,67 @@ describe("Novel-Ideas", () => {
                 });
             });
         });
+        describe("POST /author", () => {
+            it("should return can not be empty message", () => {
+                const author = {
+                    name : "",
+                    keyword1 : "Horror",
+                    keyword2 : "Science Fiction",
+                    numofbooks : 4,
+                };
+
+                return request(server)
+                    .post("/author")
+                    .send(author)
+                    .then(res => {
+                        expect(res.body.message).equals("The author name can not be empty");
+                    });
+            });
+            it("should return author already existed message", () => {
+                const author = {
+                    name : "Rusty",
+                    keyword1 : "Horror",
+                    keyword2 : "Science Fiction",
+                    numofbooks : 4,
+                };
+
+                return request(server)
+                    .post("/author")
+                    .send(author)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.message).equals("The author is already exist");
+                    });
+            });
+            it("should return confirmation message and update mongodb", () => {
+                const author = {
+                    name : "Ella",
+                    keyword1 : "History",
+                    keyword2 : "Whodunit",
+                    numofbooks : 3,
+                };
+
+                return request(server)
+                    .post("/author")
+                    .send(author)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.message).equals("Author Successfully added");
+                        validID2 = res.body.data._id;
+                    });
+            });
+            after(() => {
+                return request(server)
+                    .get(`/author/${validID2}`)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body[0]).to.have.property("name", "Ella");
+                        expect(res.body[0]).to.have.property("keyword1", "History");
+                        expect(res.body[0]).to.have.property("keyword2", "Whodunit");
+                        expect(res.body[0]).to.have.property("numofbooks", 3);
+                        expect(res.body[0]).to.have.property("numofcollected", 0);
+                    });
+            });
+        });
     })
 })
