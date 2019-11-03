@@ -367,5 +367,63 @@ describe("Novel-Ideas", () => {
                     });
             });
         });
+        describe("POST /user/login", () => {
+            it("should return username or password can not be empty message", () => {
+                const user = {
+                    username: "",
+                    password: "asdfgh",
+                };
+
+                return request(server)
+                    .post("/user/login")
+                    .send(user)
+                    .then(res => {
+                        expect(res.body.message).equals("The username or password  can not be empty");
+                    });
+            });
+            it("should return username is not exist message", () => {
+                const user = {
+                    username: "David",
+                    password: "asdfgh",
+                };
+
+                return request(server)
+                    .post("/user/login")
+                    .send(user)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.message).equals("Username is not exist");
+                    });
+            });
+            it("should return wrong password message", () => {
+                const user = {
+                    username: "Merry",
+                    password: "asdfgh",
+                };
+
+                return request(server)
+                    .post("/user/login")
+                    .send(user)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.message).equals("Wrong Password");
+                    });
+            });
+            it("should return confirmation message and update mongodb", () => {
+                const user = {
+                    username: "Merry",
+                    password: "123456",
+                };
+
+                return request(server)
+                    .post("/user/login")
+                    .send(user)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.message).equals("Sign in Successfully");
+                    });
+            });
+        });
+
     });
 })
