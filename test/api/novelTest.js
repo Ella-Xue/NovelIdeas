@@ -3,14 +3,15 @@ const expect = chai.expect;
 const request = require("supertest");
 const MongoMemoryServer = require("mongodb-memory-server").MongoMemoryServer;
 const Novel = require("../../models/novels");
+const User = require("../../models/user");
 const mongoose = require("mongoose");
 
 const _ = require("lodash");
 let server;
 let mongod;
-let db, validID;
+let db, validID,validID1;
 
-describe("Novel", () => {
+describe("Novel-Ideas", () => {
     before(async () => {
         try {
             mongod = new MongoMemoryServer({
@@ -60,12 +61,26 @@ describe("Novel", () => {
             await novel.save();
             novel = await Novel.findOne({name: "Rusty Hotel"});
             validID = novel._id;
+
+            await User.deleteMany({});
+            let user = new User();
+            user.username = "Merry";
+            user.password = "123456";
+            user.email = "merry@ie";
+            await user.save();
+            user = new User();
+            user.username = "Lily";
+            user.password = "123456";
+            user.email = "lily@ie";
+            await user.save();
+            user = await User.findOne({username: "Merry"});
+            validID1 = user._id;
         } catch (error) {
             console.log(error);
         }
     });
-
-    describe("GET/novels", () => {
+    describe("Novel",()=>{
+        describe("GET/novels", () => {
         it("should GET all the novels", done => {
             request(server)
                 .get("/novels")
@@ -105,7 +120,7 @@ describe("Novel", () => {
                 });
         });
     });
-    describe("GET /novels/:id", () => {
+        describe("GET /novels/:id", () => {
         describe("when the id is valid", () => {
             it("should return the matching novel", done => {
                 request(server)
@@ -136,7 +151,7 @@ describe("Novel", () => {
             });
         });
     });
-    describe("POST /novels", () => {
+        describe("POST /novels", () => {
         it("should return can not be empty message", () => {
             const novel = {
                 name: "",
@@ -197,7 +212,7 @@ describe("Novel", () => {
                 });
         });
     });
-    describe("PUT /novels/:id", () => {
+        describe("PUT /novels/:id", () => {
         describe("when the id is valid", () => {
 
             it("should return a message and update the grade", () => {
@@ -235,4 +250,38 @@ describe("Novel", () => {
             });
         });
     });
-});
+    });
+    describe("User",()=>{
+        describe("GET /user/:id", () => {
+            describe("when the id is valid", () => {
+                it("should return the matching user", done => {
+                    request(server)
+                        .get(`/user/${validID1}`)
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .end((err, res) => {
+                            expect(res.body[0]).to.have.property("username", "Merry");
+                            expect(res.body[0]).to.have.property("password", "123456");
+                            expect(res.body[0]).to.have.property("email", "merry@ie");
+                            done(err);
+                        });
+                });
+            });
+            describe("when the id is invalid", () => {
+                it("should return the NOT found message", done => {
+                    request(server)
+                        .get("/user/10001000000020202")
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .end((err, res) => {
+                            expect(res.body.message).equals("User NOT Found!");
+                            done(err);
+                        });
+                });
+            });
+        });
+
+    });
+})

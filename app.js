@@ -25,9 +25,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.get('/user/:id', user.userInfo);
 app.post('/user',user.register);
 app.post('/user/login',user.login);
-app.get('/user/:id', user.userInfo);
 app.put('/user/:id', user.editPassword);
 
 app.get('/novels', novels.findAll);
