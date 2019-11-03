@@ -11,7 +11,7 @@ router.editPassword = (req,res)=>{
     User.findById(req.params.id, function(err,user) {
         var newpassword = req.body.password;
         if (err)
-            res.json({ message: 'Novel NOT Found!', errmsg : err } );
+            res.json({ message: 'User NOT Found!', errmsg : err } );
         else if(user.password == newpassword){
             res.json({ message: 'No change to the Password', data: user} );
         }
