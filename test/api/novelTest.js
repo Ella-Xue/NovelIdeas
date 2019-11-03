@@ -4,12 +4,13 @@ const request = require("supertest");
 const MongoMemoryServer = require("mongodb-memory-server").MongoMemoryServer;
 const Novel = require("../../models/novels");
 const User = require("../../models/user");
+const Author = require("../../models/author");
 const mongoose = require("mongoose");
 
 const _ = require("lodash");
 let server;
 let mongod;
-let db, validID,validID1;
+let db, validID,validID1,validID2;
 
 describe("Novel-Ideas", () => {
     before(async () => {
@@ -75,6 +76,24 @@ describe("Novel-Ideas", () => {
             await user.save();
             user = await User.findOne({username: "Merry"});
             validID1 = user._id;
+
+            await Author.deleteMany({});
+            let author = new Author();
+            author.name = "Rusty";
+            author.keyword1 = "Horror";
+            author.keyword2 = "Science Fiction";
+            author.numofbooks = 4;
+            author.numofcollected = 9;
+            await author.save();
+            author = new Author();
+            author.name = "White";
+            author.keyword1 = "Romantic";
+            author.keyword2 = "Science Fiction";
+            author.numofbooks = 2;
+            author.numofcollected = 5;
+            await author.save();
+            author = await Author.findOne({name: "Rusty"});
+            validID2 = author._id;
         } catch (error) {
             console.log(error);
         }
@@ -474,4 +493,50 @@ describe("Novel-Ideas", () => {
             });
         });
     });
+    describe.only("Author",()=>{
+        describe("GET/author", () => {
+            it("should GET all the authors", done => {
+                request(server)
+                    .get("/author")
+                    .set("Accept", "application/json")
+                    .expect("Content-Type", /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        try {
+                            expect(res.body).to.be.a("array");
+                            expect(res.body.length).to.equal(2);
+                            let result = _.map(res.body, author => {
+                                return {
+                                    name: author.name,
+                                    keyword1: author.keyword1,
+                                    keyword2: author.keyword2,
+                                    numofbooks:author.numofbooks,
+                                    numofcollected:author.numofcollected
+                                };
+                            });
+                            expect(result).to.deep.include({
+                                name : "Rusty",
+                                keyword1 : "Horror",
+                                keyword2 : "Science Fiction",
+                                numofbooks : 4,
+                                numofcollected : 9
+
+                            });
+                            expect(result).to.deep.include({
+                                name : "White",
+                                keyword1 : "Romantic",
+                                keyword2 : "Science Fiction",
+                                numofbooks : 2,
+                                numofcollected : 5
+
+
+                            });
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            });
+        });
+    })
 })
