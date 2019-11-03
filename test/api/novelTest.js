@@ -251,7 +251,7 @@ describe("Novel-Ideas", () => {
         });
     });
         });
-    describe.only("User",()=>{
+    describe("User",()=>{
         describe("GET /user/:id", () => {
             describe("when the id is valid", () => {
                 it("should return the matching user", done => {
