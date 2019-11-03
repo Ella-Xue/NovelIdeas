@@ -493,7 +493,7 @@ describe("Novel-Ideas", () => {
             });
         });
     });
-    describe.only("Author",()=>{
+    describe("Author",()=>{
         describe("GET/author", () => {
             it("should GET all the authors", done => {
                 request(server)
@@ -628,6 +628,44 @@ describe("Novel-Ideas", () => {
                         expect(res.body[0]).to.have.property("numofbooks", 3);
                         expect(res.body[0]).to.have.property("numofcollected", 0);
                     });
+            });
+        });
+        describe.only("PUT /author/:id/collect", () => {
+            describe("when the id is valid", () => {
+                it("should return a message and the author number of collected increased by 1", () => {
+                    return request(server)
+                        .put(`/author/${validID2}/collect`)
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "Author Successfully collected!"
+                            });
+                            expect(resp.body.data).to.have.property("numofcollected", 10);
+                        });
+                });
+                after(() => {
+                    return request(server)
+                        .get(`/author/${validID2}`)
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body[0]).to.have.property("numofcollected", 10);
+                        });
+                });
+            });
+            describe("when the id is invalid", () => {
+                it("should return a 404 and a message for invalid author id", () => {
+                    return request(server)
+                        .put("/author/11000100201/collect")
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "Author NOT Found!"
+                            });
+                        });
+
+                });
             });
         });
     })
