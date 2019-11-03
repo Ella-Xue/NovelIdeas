@@ -424,6 +424,54 @@ describe("Novel-Ideas", () => {
                     });
             });
         });
-
+        describe("PUT /user/:id", () => {
+            describe("when the id is valid", () => {
+                it("should return repeated password message",()=>{
+                    return request(server)
+                        .put(`/user/${validID1}`)
+                        .send({"password":"123456"})
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "No change to the Password"
+                            });
+                            expect(resp.body.data).to.have.property("password", "123456");
+                        });
+                })
+                it("should return a message and update the password", () => {
+                    return request(server)
+                        .put(`/user/${validID1}`)
+                        .send({"password":"123456abc"})
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "Password Successfully changed!"
+                            });
+                            expect(resp.body.data).to.have.property("password", "123456abc");
+                        });
+                });
+                after(() => {
+                    return request(server)
+                        .get(`/user/${validID1}`)
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body[0]).to.have.property("password", "123456abc");
+                        });
+                });
+            });
+            describe("when the id is invalid", () => {
+                it("should return the User NOT Found! message", done => {
+                    request(server)
+                        .get("/user/1000000020202")
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .end((err, res) => {
+                            expect(res.body.message).equals("User NOT Found!");
+                            done(err);
+                        });
+                });
+            });
+        });
     });
 })
