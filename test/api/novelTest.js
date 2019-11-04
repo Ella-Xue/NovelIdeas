@@ -4,7 +4,7 @@ const request = require("supertest");
 const MongoMemoryServer = require("mongodb-memory-server").MongoMemoryServer;
 const Novel = require("../../models/novels");
 const mongoose = require("mongoose");
-
+mongoose.set('useFindAndModify', false);
 const _ = require("lodash");
 let server;
 let mongod;
@@ -196,27 +196,27 @@ describe("Novel", () => {
         });
     });
     describe("DELETE /novels/:id", () => {
-        describe.only("when the id is valid", () => {
+        describe("when the id is valid", () => {
             it("should return confirmation message and update database", () => {
                 request(server)
                     .delete(`novels/${validID}`)
                     .set("Accept", "application/json")
                     .expect("Content-Type", /json/)
                     .expect(200)
-                    .end((err, res) => {
+                    .then(res => {
                         expect(res.body.message).equals("Novels Successfully Deleted!");
-                        done(err);
                     });
             });
         });
         describe("when the id is invalid", () => {
-            it("should return the NOT found message", done => {
+            it("should return the NOT found message", () => {
                 request(server)
                     .delete("/novels/1000000020202")
+                    .set("Accept", "application/json")
+                    .expect("Content-Type", /json/)
                     .expect(200)
-                    .end((err, res) => {
+                    .then(res => {
                         expect(res.body.message).equals("Novels NOT Found!");
-                        done(err);
                     });
             });
         });
