@@ -1,0 +1,4 @@
+file:
+  - ./test/api/novelTest.js
+timeout : 3000
+require: '@babel/register'
