@@ -493,7 +493,7 @@ describe("Novel-Ideas", () => {
             });
         });
     });
-    describe.only("Author",()=>{
+    describe("Author",()=>{
         describe("GET/author", () => {
             it("should GET all the authors", done => {
                 request(server)
