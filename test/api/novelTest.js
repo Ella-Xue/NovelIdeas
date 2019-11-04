@@ -98,7 +98,7 @@ describe("Novel-Ideas", () => {
             console.log(error);
         }
     });
-    describe("Novel",()=>{
+    describe("Novel", () => {
         describe("GET/novels", () => {
             it("should GET all the novels", done => {
                 request(server)
@@ -217,60 +217,86 @@ describe("Novel-Ideas", () => {
                     .then(res => {
                         expect(res.body.message).equals("Novel Successfully added");
                         validID = res.body.data._id;
-                });
-            });
-        after(() => {
-            return request(server)
-                .get(`/novels/${validID}`)
-                .expect(200)
-                .then(res => {
-                    expect(res.body[0]).to.have.property("name", "My Girl");
-                    expect(res.body[0]).to.have.property("author", "Lily");
-                    expect(res.body[0]).to.have.property("type", "Romantic");
-                    expect(res.body[0]).to.have.property("recommender", "HP");
-                });
-        });
-    });
-        describe("PUT /novels/:id", () => {
-        describe("when the id is valid", () => {
-
-            it("should return a message and update the grade", () => {
-                return request(server)
-                    .put(`/novels/${validID}`)
-                    .send({"grade":4})
-                    .expect(200)
-                    .then(resp => {
-                        expect(resp.body).to.include({
-                            message: "Novel Successfully graded!"
-                        });
-                        expect(resp.body.data).to.have.property("grade", 4);
                     });
             });
             after(() => {
                 return request(server)
                     .get(`/novels/${validID}`)
                     .expect(200)
-                    .then(resp => {
-                        expect(resp.body[0]).to.have.property("grade", 4);
+                    .then(res => {
+                        expect(res.body[0]).to.have.property("name", "My Girl");
+                        expect(res.body[0]).to.have.property("author", "Lily");
+                        expect(res.body[0]).to.have.property("type", "Romantic");
+                        expect(res.body[0]).to.have.property("recommender", "HP");
                     });
             });
         });
-        describe("when the id is invalid", () => {
-            it("should return the Novel NOT Found! message", done => {
-                request(server)
-                    .get("/novels/1000000020202")
-                    .set("Accept", "application/json")
-                    .expect("Content-Type", /json/)
-                    .expect(200)
-                    .end((err, res) => {
-                        expect(res.body.message).equals("Novel NOT Found!");
-                        done(err);
-                    });
+        describe("PUT /novels/:id", () => {
+            describe("when the id is valid", () => {
+
+                it("should return a message and update the grade", () => {
+                    return request(server)
+                        .put(`/novels/${validID}`)
+                        .send({"grade": 4})
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "Novel Successfully graded!"
+                            });
+                            expect(resp.body.data).to.have.property("grade", 4);
+                        });
+                });
+                after(() => {
+                    return request(server)
+                        .get(`/novels/${validID}`)
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body[0]).to.have.property("grade", 4);
+                        });
+                });
+            });
+            describe("when the id is invalid", () => {
+                it("should return the Novel NOT Found! message", done => {
+                    request(server)
+                        .get("/novels/1000000020202")
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .end((err, res) => {
+                            expect(res.body.message).equals("Novel NOT Found!");
+                            done(err);
+                        });
+                });
+            });
+        });
+        describe("DELETE /novels/:id", () => {
+            describe("when the id is valid", () => {
+                it("should return confirmation message and update database", () => {
+                    request(server)
+                        .delete(`novels/${validID}`)
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .then(res => {
+                            expect(res.body.message).equals("Novels Successfully Deleted!");
+                        });
+                });
+            });
+            describe("when the id is invalid", () => {
+                it("should return the NOT found message", () => {
+                    request(server)
+                        .delete("/novels/1000000020202")
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .then(res => {
+                            expect(res.body.message).equals("Novels NOT Found!");
+                        });
+                });
             });
         });
     });
-        });
-    describe("User",()=>{
+    describe("User", () => {
         describe("GET /user/:id", () => {
             describe("when the id is valid", () => {
                 it("should return the matching user", done => {
@@ -306,9 +332,8 @@ describe("Novel-Ideas", () => {
                 const user = {
                     username: "",
                     password: "asdfgh",
-                    email:"sth@wit"
+                    email: "sth@wit"
                 };
-
                 return request(server)
                     .post("/user")
                     .send(user)
@@ -320,7 +345,7 @@ describe("Novel-Ideas", () => {
                 const user = {
                     username: "Justion",
                     password: "",
-                    email:"sth@wit"
+                    email: "sth@wit"
                 };
 
                 return request(server)
@@ -334,7 +359,7 @@ describe("Novel-Ideas", () => {
                 const user = {
                     username: "Justin",
                     password: "asdfgh",
-                    email:""
+                    email: ""
                 };
 
                 return request(server)
@@ -348,7 +373,7 @@ describe("Novel-Ideas", () => {
                 const user = {
                     username: "Merry",
                     password: "asdfgh",
-                    email:"sth@wit"
+                    email: "sth@wit"
                 };
 
                 return request(server)
@@ -363,7 +388,7 @@ describe("Novel-Ideas", () => {
                 const user = {
                     username: "Justin",
                     password: "asdfgh",
-                    email:"Justinsth@wit"
+                    email: "Justinsth@wit"
                 };
 
                 return request(server)
@@ -445,10 +470,10 @@ describe("Novel-Ideas", () => {
         });
         describe("PUT /user/:id", () => {
             describe("when the id is valid", () => {
-                it("should return repeated password message",()=>{
+                it("should return repeated password message", () => {
                     return request(server)
                         .put(`/user/${validID1}`)
-                        .send({"password":"123456"})
+                        .send({"password": "123456"})
                         .expect(200)
                         .then(resp => {
                             expect(resp.body).to.include({
@@ -460,7 +485,7 @@ describe("Novel-Ideas", () => {
                 it("should return a message and update the password", () => {
                     return request(server)
                         .put(`/user/${validID1}`)
-                        .send({"password":"123456abc"})
+                        .send({"password": "123456abc"})
                         .expect(200)
                         .then(resp => {
                             expect(resp.body).to.include({
@@ -493,7 +518,7 @@ describe("Novel-Ideas", () => {
             });
         });
     });
-    describe("Author",()=>{
+    describe("Author", () => {
         describe("GET/author", () => {
             it("should GET all the authors", done => {
                 request(server)
@@ -510,24 +535,24 @@ describe("Novel-Ideas", () => {
                                     name: author.name,
                                     keyword1: author.keyword1,
                                     keyword2: author.keyword2,
-                                    numofbooks:author.numofbooks,
-                                    numofcollected:author.numofcollected
+                                    numofbooks: author.numofbooks,
+                                    numofcollected: author.numofcollected
                                 };
                             });
                             expect(result).to.deep.include({
-                                name : "Rusty",
-                                keyword1 : "Horror",
-                                keyword2 : "Science Fiction",
-                                numofbooks : 4,
-                                numofcollected : 9
+                                name: "Rusty",
+                                keyword1: "Horror",
+                                keyword2: "Science Fiction",
+                                numofbooks: 4,
+                                numofcollected: 9
 
                             });
                             expect(result).to.deep.include({
-                                name : "White",
-                                keyword1 : "Romantic",
-                                keyword2 : "Science Fiction",
-                                numofbooks : 2,
-                                numofcollected : 5
+                                name: "White",
+                                keyword1: "Romantic",
+                                keyword2: "Science Fiction",
+                                numofbooks: 2,
+                                numofcollected: 5
                             });
                             done();
                         } catch (e) {
@@ -571,10 +596,10 @@ describe("Novel-Ideas", () => {
         describe("POST /author", () => {
             it("should return can not be empty message", () => {
                 const author = {
-                    name : "",
-                    keyword1 : "Horror",
-                    keyword2 : "Science Fiction",
-                    numofbooks : 4,
+                    name: "",
+                    keyword1: "Horror",
+                    keyword2: "Science Fiction",
+                    numofbooks: 4,
                 };
 
                 return request(server)
@@ -586,10 +611,10 @@ describe("Novel-Ideas", () => {
             });
             it("should return author already existed message", () => {
                 const author = {
-                    name : "Rusty",
-                    keyword1 : "Horror",
-                    keyword2 : "Science Fiction",
-                    numofbooks : 4,
+                    name: "Rusty",
+                    keyword1: "Horror",
+                    keyword2: "Science Fiction",
+                    numofbooks: 4,
                 };
 
                 return request(server)
@@ -602,10 +627,10 @@ describe("Novel-Ideas", () => {
             });
             it("should return confirmation message and update mongodb", () => {
                 const author = {
-                    name : "Ella",
-                    keyword1 : "History",
-                    keyword2 : "Whodunit",
-                    numofbooks : 3,
+                    name: "Ella",
+                    keyword1: "History",
+                    keyword2: "Whodunit",
+                    numofbooks: 3,
                 };
 
                 return request(server)
@@ -668,9 +693,9 @@ describe("Novel-Ideas", () => {
                 });
             });
         });
-        describe("DELETE /author/:id",()=>{
+        describe("DELETE /author/:id", () => {
             describe("when the id is valid", () => {
-                it("should return confirmation message",()=>{
+                it("should return confirmation message", () => {
                     request(server)
                         .delete(`/author/${validID2}`)
                         .set("Accept", "application/json")
@@ -683,8 +708,8 @@ describe("Novel-Ideas", () => {
                         });
                 });
             });
-            describe("when the id is invalid",()=>{
-                it("should return NOT found message",()=>{
+            describe("when the id is invalid", () => {
+                it("should return NOT found message", () => {
                     request(server)
                         .delete("/author/12001020100101")
                         .set("Accept", "application/json")
@@ -698,5 +723,5 @@ describe("Novel-Ideas", () => {
                 })
             })
         });
-    })
-})
+    });
+});

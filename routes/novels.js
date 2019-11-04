@@ -86,7 +86,7 @@ router.deleteNovel = (req, res) => {
         if (err)
             res.json({ message: 'Novels NOT Found!', errmsg : err } );
         else
-            res.json({ message: 'Novels Successfully Deleted!'});
+            res.json({ message: 'Novels Successfully Deleted!',data: Novel});
     });
 }
 
