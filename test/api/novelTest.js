@@ -6,7 +6,7 @@ const Novel = require("../../models/novels");
 const User = require("../../models/user");
 const Author = require("../../models/author");
 const mongoose = require("mongoose");
-
+mongoose.set('useFindAndModify', false);
 const _ = require("lodash");
 let server;
 let mongod;
@@ -493,7 +493,7 @@ describe("Novel-Ideas", () => {
             });
         });
     });
-    describe("Author",()=>{
+    describe.only("Author",()=>{
         describe("GET/author", () => {
             it("should GET all the authors", done => {
                 request(server)
@@ -630,7 +630,7 @@ describe("Novel-Ideas", () => {
                     });
             });
         });
-        describe.only("PUT /author/:id/collect", () => {
+        describe("PUT /author/:id/collect", () => {
             describe("when the id is valid", () => {
                 it("should return a message and the author number of collected increased by 1", () => {
                     return request(server)
@@ -667,6 +667,36 @@ describe("Novel-Ideas", () => {
 
                 });
             });
+        });
+        describe("DELETE /author/:id",()=>{
+            describe("when the id is valid", () => {
+                it("should return confirmation message",()=>{
+                    request(server)
+                        .delete(`/author/${validID2}`)
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "Author Successfully Deleted!"
+                            });
+                        });
+                });
+            });
+            describe("when the id is invalid",()=>{
+                it("should return NOT found message",()=>{
+                    request(server)
+                        .delete("/author/12001020100101")
+                        .set("Accept", "application/json")
+                        .expect("Content-Type", /json/)
+                        .expect(200)
+                        .then(resp => {
+                            expect(resp.body).to.include({
+                                message: "Author NOT Found!"
+                            });
+                        });
+                })
+            })
         });
     })
 })
