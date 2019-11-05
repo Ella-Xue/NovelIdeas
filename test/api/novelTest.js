@@ -234,7 +234,6 @@ describe("Novel-Ideas", () => {
         })
         describe("PUT /novels/:id", () => {
             describe("when the id is valid", () => {
-
                 it("should return a message and update the grade", () => {
                     return request(server)
                         .put(`/novels/${validID}`)
