@@ -54,8 +54,7 @@ Mongo version v4.2.1
   https://www.jianshu.com/p/74f98c0c8551
 
 Novel Ideals      
-
-      GET/novels
+     GET/novels
 GET /novels 200 8.263 ms - 612
         √ should GET all the novels
       GET /novels/:id
