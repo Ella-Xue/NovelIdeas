@@ -16,7 +16,7 @@
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "lodash": "^4.17.15",
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "mongo": "^0.1.0",
     "mongodb": "^3.3.3",
     "mongodb-core": "^3.2.7",
